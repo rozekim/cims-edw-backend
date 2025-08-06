@@ -2,12 +2,13 @@ services:
   - type: web
     name: cims-edw-backend-api
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      apt-get update && \
+      apt-get install -y curl apt-transport-https unixodbc unixodbc-dev && \
+      curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+      curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+      apt-get update && \
+      ACCEPT_EULA=Y apt-get install -y msodbcsql18 && \
+      pip install -r requirements.txt
     startCommand: gunicorn backend.app:app
-    build:
-      packages:
-        - curl
-        - apt-transport-https
-        - unixodbc
-        - unixodbc-dev
-        - msodbcsql18
+    
