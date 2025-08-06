@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cims-edw-backend-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn backend.app:app
+    build:
+      packages:
+        - curl
+        - apt-transport-https
+        - unixodbc
+        - unixodbc-dev
+        - msodbcsql18
