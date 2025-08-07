@@ -5,10 +5,10 @@ FROM python:3.9-slim
 RUN apt-get update && \
     apt-get install -y curl gnupg apt-transport-https unixodbc unixodbc-dev && \
     curl -sSL https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
-    curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+    curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null && \
     apt-get update && \
     ACCEPT_EULA=Y apt-get install -y msodbcsql18 && \
-    rm microsoft.gpg
+    rm /etc/apt/trusted.gpg.d/microsoft.gpg
 
 # ✅ Step 3: Set working directory
 WORKDIR /app
