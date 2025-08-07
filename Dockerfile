@@ -1,23 +1,9 @@
-# Use official Python base image
-FROM python:3.10-slim
-
-# Install system dependencies
+# Install system dependencies & Microsoft ODBC Driver 18
 RUN apt-get update && \
-    apt-get install -y curl apt-transport-https unixodbc unixodbc-dev gnupg && \
-    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-    curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+    apt-get install -y curl gnupg apt-transport-https unixodbc unixodbc-dev && \
+    curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg && \
+    install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/ && \
+    echo "deb [arch=amd64] https://packages.microsoft.com/debian/11/prod bullseye main" > /etc/apt/sources.list.d/mssql-release.list && \
     apt-get update && \
-    ACCEPT_EULA=Y apt-get install -y msodbcsql18
-
-# Set working directory
-WORKDIR /app
-
-# Copy and install Python requirements
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy your backend code
-COPY . .
-
-# Run your app
-CMD ["gunicorn", "backend.app:app"]
+    ACCEPT_EULA=Y apt-get install -y msodbcsql18 && \
+    rm microsoft.gpg
